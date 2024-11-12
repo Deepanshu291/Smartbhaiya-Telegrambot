@@ -1,8 +1,9 @@
 import logging
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup,URLInputFile
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup,URLInputFile,FSInputFile
 from aiogram.filters import Command
 import asyncio
+from Organizer import ChapterOrganizer
 
 # TOKEN = '5421069203:AAFfrwK4v58x-7N4cmhcGa9i6_wLoYUnz8M'
 TOKEN = '5421069203:AAFfrwK4v58x-7N4cmhcGa9i6_wLoYUnz8M'
@@ -13,8 +14,8 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-
-
+base_dir = '10science'
+chporg = ChapterOrganizer(base_dir)
 
 def generate_keyboard(keyboard_type: str):
     if keyboard_type == "subject":
@@ -27,7 +28,7 @@ def generate_keyboard(keyboard_type: str):
                 ]
             ]
         )
-    
+
     elif keyboard_type == "chapter":
         chapters = [str(i) for i in range(1, 15)]  # Chapters 1 to 14
     keyboard = InlineKeyboardMarkup(
@@ -39,15 +40,15 @@ def generate_keyboard(keyboard_type: str):
 
         ]
     )
-    keyboard.inline_keyboard.insert( 0,[InlineKeyboardButton(text="All Chapters", callback_data="chapter_all")])
-    
+    keyboard.inline_keyboard.insert( 0,[InlineKeyboardButton(text="All Chapters", callback_data="all_chapter")])
+
     return keyboard
 
 def genrate_rkm(options:list):
     if len(options)%2==1:
          options.append("")
-    btn = [[KeyboardButton(text=f"{str(options[i]).capitalize()}"),
-            KeyboardButton(text=f"{str(options[i+1]).capitalize()}")
+    btn = [[KeyboardButton(text=f"{str(options[i])}"),
+            KeyboardButton(text=f"{str(options[i+1])}")
             ]
             for i in range(0, len(options),2)]
     return ReplyKeyboardMarkup(keyboard=btn,resize_keyboard=True,input_field_placeholder="Select Category:-")
@@ -57,8 +58,10 @@ user_state={}
 
 @dp.message(Command('start'))
 async def startbot(msg:types.Message):
+    chporg.run(n=4)
+    print(chporg.chpterwised)
     await msg.answer("Select Subject:", reply_markup=genrate_rkm(['Notes','Book','Solution','MarkWise Question','Testpapers']))
-    
+
 # Command handler for /notes
 @dp.message(Command('notes'))
 async def cmd_notes(message: types.Message):
@@ -88,6 +91,9 @@ async def cmd_markwise(message: types.Message):
     # await message.answer("Select your MarkWise questions:", reply_markup=generate_keyboard("subject"))
 
 async def chapterHandler(msg: types.message,category:str):
+    # print(chporg.chpterwised)
+    # if chporg.chpterwised == {}:
+    #    chporg.run(4)
     user_state[msg.from_user.id]['category']= category.lower()
     print(user_state.items())
     await msg.answer(f"Select your {category.capitalize()}:", reply_markup=generate_keyboard("subject"))
@@ -103,6 +109,8 @@ async def category_handler(msg: types.Message):
 @dp.callback_query(lambda c: c.data.startswith('subject_'))
 async def process_subject_selection(callback_query: types.CallbackQuery):
     subject_code = callback_query.data.split("_")[1]
+    if chporg.chpterwised == {}:
+           chporg.run(15)
     user_state[callback_query.from_user.id]['class'] = subject_code
     # await bot.answer_callback_query(callback_query.id)
     await asyncio.sleep(0.5)
@@ -119,26 +127,41 @@ async def process_subject_selection(callback_query: types.CallbackQuery):
         message_id= callback_query.message.message_id,
         reply_markup=generate_keyboard('chapter'),
     )
-    # await bot.send_message(callback_query.from_user.id, f"Now, select a chapter for {subject_code} Grade:",)
 
-pdfurl = "https://cloud.appwrite.io/v1/storage/buckets/672e4699000c9ac7f3f0/files/67332ba60012c79b8e71/view?project=672e34dc001691a52a72"
 
 # Callback query handler for selecting a chapter (1-14)
 @dp.callback_query(lambda c: c.data.startswith('chapter_'))
 async def process_chapter_selection(callback_query: types.CallbackQuery):
+    # chporg.run(15)
     chapter_no = callback_query.data.split("_")[1]
     user_state[callback_query.from_user.id]['chapter']=chapter_no
+    category = user_state[callback_query.from_user.id]['category']
+    print(category)
     await bot.answer_callback_query(callback_query.id)
-    pdf = URLInputFile(
-         pdfurl,filename="Ch -1 Chemical reaction and equation.pdf",
+    data = chporg.query(chapter_no=int(chapter_no), category=category.split(' ')[0])
+    
+    pdf = FSInputFile(
+         data['filepath'],filename=f"{data['name']}.pdf",
     )
-    img = URLInputFile(
-         pdfurl,filename="Ch -1 Chemical reaction and equation.png",
-    )
+    
     # Send the selected chapter number to the user
-    print(user_state.items())
-    await bot.send_message(callback_query.from_user.id, f"You selected Chapter {chapter_no}")
-    await bot.send_document(thumbnail=img, document=pdf,chat_id=callback_query.from_user.id)
+    await bot.send_message(callback_query.from_user.id, f"You selected Chapter {chapter_no}....")
+    await bot.send_document( document=pdf,chat_id=callback_query.from_user.id)
+
+@dp.callback_query(lambda c: c.data.startswith('all_chapter'))
+async def process_all_chapters(callback_query: types.CallbackQuery):
+    categ = user_state[callback_query.from_user.id]['category']
+    datas = chporg.query(category=categ)
+    # print(datas)
+    await bot.send_message(callback_query.from_user.id,"Sending All Chapters Just a minute...")
+    for k,data in datas.items():
+         # print(data['filepath'])
+        pdf = FSInputFile(
+         data['filepath'],filename=f"{data['name']}.pdf",
+        )
+        await bot.send_document( document=pdf,chat_id=callback_query.from_user.id)
+        
+    
 
 async def main():
     await dp.start_polling(bot)
@@ -147,5 +170,7 @@ if __name__ == '__main__':
     print('Bot is started')
     asyncio.run(main())
     # executor.start_polling(dp, skip_updates=True)
+
+
 
 
