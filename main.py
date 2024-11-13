@@ -18,8 +18,9 @@ def start():
 
 @app.route('/startBot')
 def cmd_start():
-    start_bot()
-    return "SmartBhaiya Bot is Running 🚀"
+    # start_bot()
+    threading.Thread(target=start_bot).start()
+    return "Initialze SmartBhaiya Bot 🚀"
 
 def start_bot():
     loop = asyncio.new_event_loop()
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     flaskThread = threading.Thread(target=run_flask)
     flaskThread.start()
 
-    start_bot()
+    # start_bot()
 
 
 
