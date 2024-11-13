@@ -78,6 +78,14 @@ class ChapterOrganizer:
 
         # If neither is provided, return an empty dictionary
         return {}
+    
+    def get_len(self, category: str):
+        # Get the length (count) of files for a specific category
+        count = 0
+        for ch_no, data in self.chpterwised.items():
+            if category in data and data.get(category):  # Ensure category exists and has a value
+                count += 1
+        return count
 
     def run(self,n):
         self.load_files()
