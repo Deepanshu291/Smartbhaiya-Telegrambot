@@ -1,13 +1,14 @@
 import logging
+import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
 import asyncio
 from Organizer import ChapterOrganizer
+from dotenv import load_dotenv
 
-# TOKEN = '5421069203:AAFfrwK4v58x-7N4cmhcGa9i6_wLoYUnz8M'
-TOKEN = '5421069203:AAFfrwK4v58x-7N4cmhcGa9i6_wLoYUnz8M'
-
+load_dotenv()
+TOKEN = os.getenv('TOKEN')
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
