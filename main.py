@@ -18,8 +18,8 @@ def start():
 
 @app.route('/startBot')
 def cmd_start():
-    start_bot()
-    # threading.Thread(target=start_bot).start()
+    # start_bot()
+    threading.Thread(target=start_bot).start()
     return "Initialze SmartBhaiya Bot 🚀"
 
 def start_bot():
