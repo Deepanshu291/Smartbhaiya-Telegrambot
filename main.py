@@ -17,7 +17,7 @@ def start():
     return "SmartBhaiya Bot is Running 🚀"
 
 @app.route('/startBot')
-def start():
+def cmd_start():
     start_bot()
     return "SmartBhaiya Bot is Running 🚀"
 
