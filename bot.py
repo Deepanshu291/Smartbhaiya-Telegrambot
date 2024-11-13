@@ -34,7 +34,7 @@ def generate_keyboard(keyboard_type: str, category=None):
 
     elif keyboard_type == "chapter":
         categorylen = chporg.get_len(category=category)
-        chapters = [str(i) for i in range(1, categorylen)]  # Chapters 1 to 14
+        chapters = [str(i) for i in range(1, categorylen+1)]  # Chapters 1 to 14
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
                 # List of rows (each row is a list of buttons)
