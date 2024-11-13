@@ -1,6 +1,3 @@
-Sure! Here's a **README** for your **SmartBhaiya Bot**, explaining how to set it up, run it, and other necessary details.
-
----
 
 # **SmartBhaiya Bot** 📚🤖💡
 
