@@ -2,9 +2,9 @@ import re
 from pathlib import Path
 
 class ChapterOrganizer:
-    def __init__(self, base_dir):
+    def __init__(self):
         # Initialize with a specific directory
-        self.base_dir = Path(base_dir)  # base_dir is now an argument
+        self.base_dir:Path = Path('')  # base_dir is now an argument
         self.dirfiles = {}
         self.result = {}
         self.chpterwised = {}
@@ -25,7 +25,7 @@ class ChapterOrganizer:
 
     def extract_name_from_marks_wise(self, filepath):
         # Extract the chapter name from the Marks_Wise_Question file path
-        match = re.search(r'(Ch-\d+) (.+)\.pdf', filepath)
+        match = re.search(r'(Chapter \d+) (.+)\.pdf', filepath)
         if match:
             chpno = match.group(1)
             chnm = match.group(2)
@@ -39,7 +39,7 @@ class ChapterOrganizer:
         for k, u in self.result.items():
             if i < len(u):
                 chp[k] = u[i]  # Safely add the file at index i
-                if 'markwise' in u[i]:
+                if 'notes' in u[i]:
                     chaptername = self.extract_name_from_marks_wise(u[i])
             else:
                 chp[k] = ""  # Return empty string if index is out of range
@@ -78,7 +78,7 @@ class ChapterOrganizer:
 
         # If neither is provided, return an empty dictionary
         return {}
-    
+
     def get_len(self, category: str):
         # Get the length (count) of files for a specific category
         count = 0
@@ -86,8 +86,9 @@ class ChapterOrganizer:
             if category in data and data.get(category):  # Ensure category exists and has a value
                 count += 1
         return count
-
-    def run(self,n):
+        
+    def run(self,n,base_dir):
+        self.base_dir = Path(base_dir)
         self.load_files()
         self.create_result()
         self.organize_chapters(n)

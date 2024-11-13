@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-base_dir = '10science'
+base_dir = './store/'
 previousclass = ''
 chporg = ChapterOrganizer()
 
@@ -122,18 +122,19 @@ async def category_handler(msg: types.Message):
 async def process_subject_selection(callback_query: types.CallbackQuery):
     subject_code = callback_query.data.split("_")[1]
     global previousclass
+    fbasedir = base_dir+subject_code.split('t')[0] + 'science'
     if previousclass == '':
         previousclass = subject_code
         print(previousclass)
     elif previousclass != subject_code:
-        chporg.run(n=16, base_dir=subject_code.split('t')[0] + 'science')
+        chporg.run(n=16, base_dir=fbasedir)
         previousclass = subject_code
         print(previousclass)
 
     category = user_state[callback_query.from_user.id]['category']
 
     if chporg.chpterwised == {}:
-        chporg.run(n=16, base_dir=subject_code.split('t')[0] + 'science')
+        chporg.run(n=16, base_dir=fbasedir)
 
     user_state[callback_query.from_user.id]['class'] = subject_code
 
