@@ -16,6 +16,11 @@ app = Flask(__name__)
 def start():
     return "SmartBhaiya Bot is Running 🚀"
 
+@app.route('/startBot')
+def start():
+    start_bot()
+    return "SmartBhaiya Bot is Running 🚀"
+
 def start_bot():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
