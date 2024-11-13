@@ -110,7 +110,7 @@ async def cmd_help(message: types.Message):
 
 async def chapterHandler(msg: types.Message, category: str):
     user_state[msg.from_user.id]['category'] = category.lower().split(' ')[0]
-    print(user_state.items())
+    # print(user_state.items())
     await msg.answer(f"Select your {category.capitalize()} 📘 for which class you want? ❓😊 👇👇👇", reply_markup=generate_keyboard("subject"))
 
 @dp.message(lambda msg: msg.text in ['Notes 📝', 'Book 📖', 'Solution 📘', 'MarksWise Question 🎯', 'Testpapers 📑'])
@@ -126,11 +126,11 @@ async def process_subject_selection(callback_query: types.CallbackQuery):
     fbasedir = base_dir+subject_code.split('t')[0] + 'science'
     if previousclass == '':
         previousclass = subject_code
-        print(previousclass)
+        # print(previousclass)
     elif previousclass != subject_code:
         chporg.run(n=16, base_dir=fbasedir)
         previousclass = subject_code
-        print(previousclass)
+        # print(previousclass)
 
     category = user_state[callback_query.from_user.id]['category']
 
@@ -159,7 +159,7 @@ async def process_chapter_selection(callback_query: types.CallbackQuery):
     chapter_no = callback_query.data.split("_")[1]
     user_state[callback_query.from_user.id]['chapter'] = chapter_no
     category = user_state[callback_query.from_user.id]['category']
-    print(category)
+    # print(category)
     await bot.answer_callback_query(callback_query.id)
     data = chporg.query(chapter_no=int(chapter_no), category=category.split(' ')[0])
 
