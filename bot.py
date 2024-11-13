@@ -188,6 +188,7 @@ async def process_all_chapters(callback_query: types.CallbackQuery):
 async def main():
     await dp.start_polling(bot)
 
-if __name__ == '__main__':
-    print('Bot is started 🚀')
-    asyncio.run(main())
+# if __name__ == '__main__':
+#     print('Bot is started 🚀')
+#     main()
+    # asyncio.run(main())
