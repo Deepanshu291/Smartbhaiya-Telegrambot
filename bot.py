@@ -220,9 +220,9 @@ async def set_webhook():
 async def main():
     # await dp.stop_polling(bot)
     # stop()
-    await set_webhook()
+    # await set_webhook()
     logging.info('Bot is started 🚀')
-    # await dp.start_polling(bot)
+    await dp.start_polling(bot)
 
 # async def stop():
 #     await dp.stop_polling()
