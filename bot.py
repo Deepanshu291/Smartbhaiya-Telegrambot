@@ -187,7 +187,7 @@ async def process_all_chapters(callback_query: types.CallbackQuery):
 
 async def main():
     # await dp.stop_polling(bot)
-    
+    await stop()
     await dp.start_polling(bot)
 
 async def stop():

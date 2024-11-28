@@ -47,6 +47,8 @@ def ping_self():
             print("Ping failed:", e)
         time.sleep(300)
 
+
+
 if __name__ == "__main__":
     # Start a background thread for periodic self-pinging
     threading.Thread(target=ping_self, daemon=True).start()
@@ -56,3 +58,4 @@ if __name__ == "__main__":
     config = Config(app=app,host='0.0.0.0', port=port, log_level="info")
     server = Server(config)
     asyncio.run(server.serve())
+    ping_self()
