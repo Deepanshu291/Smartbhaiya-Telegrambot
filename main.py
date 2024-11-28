@@ -15,10 +15,10 @@ app = Flask(__name__)
 def start():
     return "SmartBhaiya Bot is Running 🚀"
 
-# @app.route('/webhook', methods=['POST'])
-# def webhook():
-#     # This handles the webhook updates received from Telegram
-#     return asyncio.run(on_webhook(request))
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    # This handles the webhook updates received from Telegram
+    return asyncio.run(on_webhook(request))
 
 def run_flask():
     # Flask should be run in the main thread

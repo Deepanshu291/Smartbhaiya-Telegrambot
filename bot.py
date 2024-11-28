@@ -3,6 +3,7 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler
 from aiogram.enums import ParseMode
 from aiohttp import web
 from aiogram.types import Update
@@ -217,12 +218,37 @@ async def set_webhook():
     else:
         logging.info(f"Webhook is already set to: {WEBHOOK_URL}")
 
+async def delete_webhook():
+    try:
+        await bot.delete_webhook()  # This removes any existing webhook.
+        logging.info("Webhook deleted successfully.")
+    except Exception as e:
+        logging.error(f"Error deleting webhook: {e}")
+
+async def on_startup(bot: Bot) -> None:
+    # Delete any existing webhook before setting a new one
+    WEBHOOK_URL = 'https://smartbhaiya-telegrambot.onrender.com/webhook'
+    await delete_webhook()
+    await bot.set_webhook(WEBHOOK_URL)
+    logging.info("Webhook set successfully.")
+
+def start_webhook_server():
+    app = web.Application()
+    webhook_handler = SimpleRequestHandler(dispatcher=dp, bot=bot)
+    webhook_handler.register(app, path='/webhook')
+    
+    # Setup webhook handler and run the server
+    web.run_app(app, host="0.0.0.0", port=8080)
+
 async def main():
     # await dp.stop_polling(bot)
     # stop()
     # await set_webhook()
+    # await delete_webhook()
+    # await set_webhook()
+    await on_startup(bot)
     logging.info('Bot is started 🚀')
-    await dp.start_polling(bot)
+    # await dp.start_polling(bot)
 
 # async def stop():
 #     await dp.stop_polling()
