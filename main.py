@@ -43,7 +43,7 @@ if __name__ == '__main__':
     flaskThread = threading.Thread(target=run_flask)
     flaskThread.start()
 
-    # start_bot()
+    start_bot()
 
 
 
