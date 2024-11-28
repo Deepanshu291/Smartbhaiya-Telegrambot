@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
@@ -16,8 +15,7 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-base_dir = '../store/'
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'store'))
+base_dir = './store/'
 previousclass = ''
 chporg = ChapterOrganizer()
 
@@ -126,7 +124,6 @@ async def process_subject_selection(callback_query: types.CallbackQuery):
     subject_code = callback_query.data.split("_")[1]
     global previousclass
     fbasedir = base_dir+subject_code.split('t')[0] + 'science'
-    print(fbasedir)
     if previousclass == '':
         previousclass = subject_code
         # print(previousclass)

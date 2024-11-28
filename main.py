@@ -2,14 +2,10 @@ import os
 from flask import Flask
 import threading
 import asyncio
+from bot import main
 import requests
 import time
 from dotenv import load_dotenv
-import sys 
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'bot'))
-
-from bot import main
 
 load_dotenv()
 
