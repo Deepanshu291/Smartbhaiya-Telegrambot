@@ -3,6 +3,8 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
+from aiogram.enums import ParseMode
+from aiohttp import web
 from aiogram.types import Update
 import asyncio
 from Organizer import ChapterOrganizer
@@ -188,13 +190,21 @@ async def process_all_chapters(callback_query: types.CallbackQuery):
 
 async def on_webhook(request):
     try:
-        update = request.get_json()  # Get the update from the incoming request
-        update = Update(**update)  # Convert the dictionary to the aiogram Update object
-        await dp.process_updates([update])  # Process the update
-        return '', 200  # Return a success status to Telegram
+        update = await request.json()  # Get the incoming update
+        update_obj = Update(**update)  # Convert to aiogram Update object
+        await dp.process_update(update_obj)  # Process the update
+        return web.Response(status=200)  # Return a successful response to Telegram
     except Exception as e:
         logging.error(f"Error processing webhook: {e}")
-        return '', 500 # Return a 200 status code
+        return web.Response(status=500)  
+    # try:
+    #     update = request.get_json()  # Get the update from the incoming request
+    #     update = Update(**update)  # Convert the dictionary to the aiogram Update object
+    #     await dp.process_updates([update])  # Process the update
+    #     return '', 200  # Return a success status to Telegram
+    # except Exception as e:
+    #     logging.error(f"Error processing webhook: {e}")
+    #     return '', 500 # Return a 200 status code
 
 async def set_webhook():
 
