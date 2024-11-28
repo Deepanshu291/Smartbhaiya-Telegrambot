@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
@@ -15,7 +16,8 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-base_dir = './store/'
+base_dir = '../store/'
+# base_dir = sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'store'))
 previousclass = ''
 chporg = ChapterOrganizer()
 
