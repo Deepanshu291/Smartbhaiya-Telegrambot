@@ -18,7 +18,10 @@ def start():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     # This handles the webhook updates received from Telegram
-    return asyncio.run(on_webhook(request))
+    loop = asyncio.new_event_loop()  # Create a new event loop for Flask
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(on_webhook(request))  
+    # return asyncio.run(on_webhook(request))
 
 def run_flask():
     # Flask should be run in the main thread

@@ -244,11 +244,11 @@ async def main():
     # await dp.stop_polling(bot)
     # stop()
     # await set_webhook()
-    # await delete_webhook()
+    await delete_webhook()
     # await set_webhook()
-    await on_startup(bot)
+    # await on_startup(bot)
     logging.info('Bot is started 🚀')
-    # await dp.start_polling(bot)
+    await dp.start_polling(bot)
 
 # async def stop():
 #     await dp.stop_polling()
