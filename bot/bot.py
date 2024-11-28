@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 base_dir = '../store/'
-# base_dir = sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'store'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'store'))
 previousclass = ''
 chporg = ChapterOrganizer()
 
@@ -126,6 +126,7 @@ async def process_subject_selection(callback_query: types.CallbackQuery):
     subject_code = callback_query.data.split("_")[1]
     global previousclass
     fbasedir = base_dir+subject_code.split('t')[0] + 'science'
+    print(fbasedir)
     if previousclass == '':
         previousclass = subject_code
         # print(previousclass)
