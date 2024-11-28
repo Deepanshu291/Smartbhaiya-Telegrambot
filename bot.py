@@ -187,10 +187,14 @@ async def process_all_chapters(callback_query: types.CallbackQuery):
 
 
 async def on_webhook(request):
-    update = request.get_json()  # Get the update
-    update = Update(**update)  # Convert dict to Update object
-    await dp.process_update(update)  # Process the update
-    return '', 200  # Return a 200 status code
+    try:
+        update = request.get_json()  # Get the update from the incoming request
+        update = Update(**update)  # Convert the dictionary to the aiogram Update object
+        await dp.process_updates([update])  # Process the update
+        return '', 200  # Return a success status to Telegram
+    except Exception as e:
+        logging.error(f"Error processing webhook: {e}")
+        return '', 500 # Return a 200 status code
 
 async def set_webhook():
 
@@ -199,15 +203,15 @@ async def set_webhook():
     response = await bot.get_webhook_info()
     if not response.url == WEBHOOK_URL:  # If webhook is not set
         await bot.set_webhook(url=WEBHOOK_URL)
-        print(f"Webhook set to {WEBHOOK_URL}")
+        logging.info(f"Webhook set to {WEBHOOK_URL}")
     else:
-        print(f"Webhook is already set to: {webhook_url}")
+        logging.info(f"Webhook is already set to: {WEBHOOK_URL}")
 
 async def main():
     # await dp.stop_polling(bot)
     # stop()
     await set_webhook()
-    print('Bot is started 🚀')
+    logging.info('Bot is started 🚀')
     # await dp.start_polling(bot)
 
 # async def stop():
