@@ -3,6 +3,7 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
+from aiogram.types import Update
 import asyncio
 from Organizer import ChapterOrganizer
 from dotenv import load_dotenv
@@ -185,15 +186,31 @@ async def process_all_chapters(callback_query: types.CallbackQuery):
         await bot.send_document(document=pdf, chat_id=callback_query.from_user.id)
 
 
+async def on_webhook(request):
+    update = request.get_json()  # Get the update
+    update = Update(**update)  # Convert dict to Update object
+    await dp.process_update(update)  # Process the update
+    return '', 200  # Return a 200 status code
+
+async def set_webhook():
+
+    WEBHOOK_URL = 'https://smartbhaiya-telegrambot.onrender.com/webhook'  # Replace with your actual Render URL
+    webhook_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}"
+    response = await bot.set_webhook(url=webhook_url)
+    if not response.url == WEBHOOK_URL:  # If webhook is not set
+        await bot.set_webhook(WEBHOOK_URL)
+    print(f"Webhook set to {WEBHOOK_URL}")
+
 async def main():
     # await dp.stop_polling(bot)
     # stop()
-    
-    await dp.start_polling(bot)
+    await set_webhook()
+    print('Bot is started 🚀')
+    # await dp.start_polling(bot)
 
-async def stop():
-    await dp.stop_polling()
-    await dp.shutdown()
+# async def stop():
+#     await dp.stop_polling()
+#     await dp.shutdown()
 # if __name__ == '__main__':
 #     print('Bot is started 🚀')
 #     main()
