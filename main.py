@@ -2,7 +2,7 @@ import os
 from flask import Flask, request
 import threading
 import asyncio
-from bot import main
+from bot import main,stop
 import requests
 import time
 from dotenv import load_dotenv
@@ -40,6 +40,7 @@ def webhook():
 def start_bot():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+    loop.run_until_complete(stop())
     loop.run_until_complete(main())
 
 def run_flask():
@@ -72,6 +73,7 @@ if __name__ == '__main__':
     set_webhook()
 
     start_bot()
+    ping_self()
 
 
 
