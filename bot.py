@@ -196,10 +196,12 @@ async def set_webhook():
 
     WEBHOOK_URL = 'https://smartbhaiya-telegrambot.onrender.com/webhook'  # Replace with your actual Render URL
     webhook_url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}"
-    response = await bot.set_webhook(url=webhook_url)
+    response = await bot.get_webhook_info()
     if not response.url == WEBHOOK_URL:  # If webhook is not set
-        await bot.set_webhook(WEBHOOK_URL)
-    print(f"Webhook set to {WEBHOOK_URL}")
+        await bot.set_webhook(url=WEBHOOK_URL)
+        print(f"Webhook set to {WEBHOOK_URL}")
+    else:
+        print(f"Webhook is already set to: {webhook_url}")
 
 async def main():
     # await dp.stop_polling(bot)
