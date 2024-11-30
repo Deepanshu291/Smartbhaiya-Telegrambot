@@ -171,6 +171,7 @@ bot2.py
 app.py
 
 test/
+store/ 
 
 bot/
 api/
