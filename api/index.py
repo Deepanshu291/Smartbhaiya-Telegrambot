@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def start():
+    start_bot()
     return "SmartBhaiya Bot is Running 🚀"
 
 # @app.route('/webhook', methods=['POST'])
