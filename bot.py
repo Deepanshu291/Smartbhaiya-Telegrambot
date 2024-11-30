@@ -4,12 +4,11 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, URLInputFile, FSInputFile
 from aiogram.filters import Command
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler
-from aiogram.enums import ParseMode
 from aiohttp import web
 from aiogram.types import Update
 import asyncio
-from Organizer import ChapterOrganizer
 from dotenv import load_dotenv
+from services.appwriteservice import fetchurl
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -21,10 +20,10 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 base_dir = './store/'
 previousclass = ''
-chporg = ChapterOrganizer()
+classdata = {}
+# chporg = ChapterOrganizer()
 
-def generate_keyboard(keyboard_type: str, category=None):
-    
+def generate_keyboard(keyboard_type: str, categorylen = 0):
     if keyboard_type == "subject":
         # Generate keyboard for selecting 9th or 10th grade
         return InlineKeyboardMarkup(
@@ -37,7 +36,6 @@ def generate_keyboard(keyboard_type: str, category=None):
         )
 
     elif keyboard_type == "chapter":
-        categorylen = chporg.get_len(category=category)
         chapters = [str(i) for i in range(1, categorylen+1)]  # Chapters 1 to 14
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
@@ -127,19 +125,19 @@ async def category_handler(msg: types.Message):
 async def process_subject_selection(callback_query: types.CallbackQuery):
     subject_code = callback_query.data.split("_")[1]
     global previousclass
-    fbasedir = base_dir+subject_code.split('t')[0] + 'science'
+    global classdata
+   
+    # fbasedir = base_dir+subject_code.split('t')[0] + 'science'
     if previousclass == '':
         previousclass = subject_code
+        classdata = await fetchurl(class_name=subject_code)
+        print("it fetched")
         # print(previousclass)
     elif previousclass != subject_code:
-        chporg.run(n=16, base_dir=fbasedir)
+        classdata = await fetchurl(class_name=subject_code)
+        print("it fetced again")
         previousclass = subject_code
-        # print(previousclass)
-
-    category = user_state[callback_query.from_user.id]['category']
-
-    if chporg.chpterwised == {}:
-        chporg.run(n=16, base_dir=fbasedir)
+    
 
     user_state[callback_query.from_user.id]['class'] = subject_code
 
@@ -153,7 +151,7 @@ async def process_subject_selection(callback_query: types.CallbackQuery):
     await bot.edit_message_reply_markup(
         chat_id=callback_query.from_user.id,
         message_id=callback_query.message.message_id,
-        reply_markup=generate_keyboard('chapter', category=category),
+        reply_markup=generate_keyboard('chapter', categorylen = len(classdata)),
     )
 
 
@@ -163,28 +161,34 @@ async def process_chapter_selection(callback_query: types.CallbackQuery):
     chapter_no = callback_query.data.split("_")[1]
     user_state[callback_query.from_user.id]['chapter'] = chapter_no
     category = user_state[callback_query.from_user.id]['category']
-    # print(category)
+    # classn = user_state[callback_query.from_user.id]['class']
+    # print(classn)
+    print(category)
     await bot.answer_callback_query(callback_query.id)
-    data = chporg.query(chapter_no=int(chapter_no), category=category.split(' ')[0])
-
-    pdf = FSInputFile(
-        data['filepath'], filename=f"{data['name']}.pdf",
-    )
-
+    # data = chporg.query(chapter_no=int(chapter_no), category=category.split(' ')[0])
+    # data = fetchurl(class_name=classn,query =category,chpno=int(chapter_no))[0]
+    # print(data)
+    data = classdata[int(chapter_no)-1]
+    # pdf = FSInputFile(
+    #     data['filepath'], filename=f"{data['name']}.pdf",
+    # )
+    pdf = URLInputFile(url=data[category],filename=f"{data['name']}.pdf")
     # Send the selected chapter number to the user
-    await bot.send_message(callback_query.from_user.id, f"Sending {data['name']} 📖....")
+    await bot.send_message(callback_query.from_user.id, f"Sending {str(category).capitalize()} of  {data['name']} 📖....")
     await bot.send_document(document=pdf, chat_id=callback_query.from_user.id)
 
 
 @dp.callback_query(lambda c: c.data.startswith('all_chapter'))
 async def process_all_chapters(callback_query: types.CallbackQuery):
+    # classnm = user_state[callback_query.from_user.id]['class']
     categ = user_state[callback_query.from_user.id]['category']
-    datas = chporg.query(category=categ)
-    await bot.send_message(callback_query.from_user.id, "Sending All Chapters 📚... Please wait ⏳...")
+    # datas = chporg.query(category=categ)
+    # datas = classdata
+    await bot.send_message(callback_query.from_user.id, f"Sending {str(categ).capitalize()} of All Chapters 📚... Please wait ⏳...")
 
-    for k, data in datas.items():
-        pdf = FSInputFile(
-            data['filepath'], filename=f"{data['name']}.pdf",
+    for data in classdata:
+        pdf = URLInputFile(
+            url=data[str(categ)],filename=f"{data['name']}.pdf"
         )
         await bot.send_document(document=pdf, chat_id=callback_query.from_user.id)
 
@@ -244,16 +248,17 @@ async def main():
     # await dp.stop_polling(bot)
     # stop()
     # await set_webhook()
-    await delete_webhook()
+    # await delete_webhook()
     # await set_webhook()
     # await on_startup(bot)
     logging.info('Bot is started 🚀')
     await dp.start_polling(bot)
 
+# main()
 # async def stop():
 #     await dp.stop_polling()
 #     await dp.shutdown()
-# if __name__ == '__main__':
-#     print('Bot is started 🚀')
-#     main()
-    # asyncio.run(main())
+if __name__ == '__main__':
+    print('Bot is started 🚀')
+    main()
+    asyncio.run(main())
