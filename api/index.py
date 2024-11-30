@@ -3,7 +3,7 @@ import threading
 import asyncio
 import requests
 from flask import Flask, request
-from bot.bot import main as bot_main, on_webhook
+from api.bot.bot import main as bot_main, on_webhook
 from dotenv import load_dotenv
 import time
 
@@ -15,13 +15,13 @@ app = Flask(__name__)
 def start():
     return "SmartBhaiya Bot is Running 🚀"
 
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    # This handles the webhook updates received from Telegram
-    loop = asyncio.new_event_loop()  # Create a new event loop for Flask
-    asyncio.set_event_loop(loop)
-    return loop.run_until_complete(on_webhook(request))  
-    # return asyncio.run(on_webhook(request))
+# @app.route('/webhook', methods=['POST'])
+# def webhook():
+#     # This handles the webhook updates received from Telegram
+#     loop = asyncio.new_event_loop()  # Create a new event loop for Flask
+#     asyncio.set_event_loop(loop)
+#     return loop.run_until_complete(on_webhook(request))  
+#     # return asyncio.run(on_webhook(request))
 
 def run_flask():
     # Flask should be run in the main thread

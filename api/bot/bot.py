@@ -8,7 +8,7 @@ from aiohttp import web
 from aiogram.types import Update
 import asyncio
 from dotenv import load_dotenv
-from services.appwriteservice import fetchurl
+from api.services.appwriteservice import fetchurl
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
