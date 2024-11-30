@@ -3,7 +3,7 @@ import threading
 import asyncio
 import requests
 from flask import Flask, request
-from bot import main as bot_main, on_webhook
+from bot.bot import main as bot_main, on_webhook
 from dotenv import load_dotenv
 import time
 

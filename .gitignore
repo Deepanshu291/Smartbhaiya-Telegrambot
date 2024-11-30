@@ -173,5 +173,5 @@ app.py
 test/
 store/ 
 
-bot/
-api/
+# bot/
+# api/
